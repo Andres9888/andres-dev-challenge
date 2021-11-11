@@ -50,11 +50,13 @@ const App = () => {
     tableData = users.map(({ uuid, name, email }) => {
       const { requestedAmount, uuid: applicationUuid } =
         applications.find((application) => application.userUuid === uuid) || {}
-      console.log(applicationUuid, "applicationUuid")
+
       const { paymentAmount, paymentMethod } =
         payments.find(
           (payment) => payment.applicationUuid === applicationUuid
         ) || {}
+
+      const shouldShowPaymentButton = !!requestedAmount && !paymentAmount
 
       // Format table data to be passed into the table component, pay button tacked
       // onto the end to allow payments to be issued for each row
@@ -65,7 +67,7 @@ const App = () => {
         requestedAmount: formatCurrency(requestedAmount),
         paymentAmount: formatCurrency(paymentAmount),
         paymentMethod,
-        initiatePayment: !paymentAmount ? (
+        initiatePayment: shouldShowPaymentButton ? (
           <Button
             onClick={() =>
               initiatePayment({
