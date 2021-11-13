@@ -56,7 +56,7 @@ const App = () => {
           (payment) => payment.applicationUuid === applicationUuid
         ) || {}
 
-      const shouldShowPaymentButton = !!requestedAmount && !paymentAmount
+      const shouldShowPaymentButton = !!applicationUuid && !paymentAmount
 
       // Format table data to be passed into the table component, pay button tacked
       // onto the end to allow payments to be issued for each row
