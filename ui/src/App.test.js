@@ -1,71 +1,54 @@
-import React, { useState as useStateMock } from "react"
-import { render, waitFor, screen } from "@testing-library/react"
-import App from "./App"
+import React from "react"
+import { render, waitFor, screen, within } from "@testing-library/react"
+import Table from "./App"
 
-// test("table renders with headers", async () => {
-//   render(<App />)
-//   await waitFor(() => screen.getByRole("table"))
-//   const uuidHeader = screen.getByText(/Uuid/g)
-//   expect(uuidHeader).toBeInTheDocument()
-//   const nameHeader = screen.getByText(/Name/g)
-//   expect(nameHeader).toBeInTheDocument()
-//   const emailHeader = screen.getByText(/Email/g)
-//   expect(emailHeader).toBeInTheDocument()
-//   const requestedAmountHeader = screen.getByText(/Requested Amount/g)
-//   expect(requestedAmountHeader).toBeInTheDocument()
-//   const paymentAmountHeader = screen.getByText(/Payment Amount/g)
-//   expect(paymentAmountHeader).toBeInTheDocument()
-//   const paymentMethodHeader = screen.getByText(/Payment Method/g)
-//   expect(paymentMethodHeader).toBeInTheDocument()
-//   const initiatePaymentHeader = screen.getByText(/Initiate Payment/g)
-//   expect(initiatePaymentHeader).toBeInTheDocument()
-// })
+describe("Table", () => {
+  it("Table renders with headers", async () => {
+    render(<Table />)
+    await waitFor(() => screen.getByRole("table"))
+    const uuidHeader = screen.getByText(/Uuid/g)
+    expect(uuidHeader).toBeInTheDocument()
+    const nameHeader = screen.getByText(/Name/g)
+    expect(nameHeader).toBeInTheDocument()
+    const emailHeader = screen.getByText(/Email/g)
+    expect(emailHeader).toBeInTheDocument()
+    const requestedAmountHeader = screen.getByText(/Requested Amount/g)
+    expect(requestedAmountHeader).toBeInTheDocument()
+    const paymentAmountHeader = screen.getByText(/Payment Amount/g)
+    expect(paymentAmountHeader).toBeInTheDocument()
+    const paymentMethodHeader = screen.getByText(/Payment Method/g)
+    expect(paymentMethodHeader).toBeInTheDocument()
+    const initiatePaymentHeader = screen.getByText(/Initiate Payment/g)
+    expect(initiatePaymentHeader).toBeInTheDocument()
+  })
 
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  useState: jest.fn(),
-}))
+  it("Does not Show Pay Button if user has no application", async () => {
+    render(<Table />)
+    await waitFor(() => screen.getByRole("table"))
+    const idWithOutApplication = "4e059bd8-2d93-41e9-9305-e9922f945e5f"
+    const row = screen.getByText(idWithOutApplication).closest("tr")
+    const utils = within(row)
 
-test("useState mock", async () => {
-  const users = [
-    {
-      uuid: "a2ee3f67-2c01-4f9c-be0f-ff3b98474173",
-      name: "Astrid Gillan",
-      email: "agillan0@acquirethisname.com",
-    },
-  ]
-  const applications = [
-    {
-      uuid: "7db92fc0-5101-4611-a684-5a5745c84cc3",
-      userUuid: "a2ee3f67-2c01-4f9c-be0f-ff3b98474173",
-      requestedAmount: 35943,
-    },
-  ]
+    expect(utils.queryByText("Pay")).not.toBeInTheDocument()
+  })
 
-  const payments = [
-    {
-      uuid: "8722073f-6520-44b7-a6ab-f04de644324d",
-      applicationUuid: "01b35179-134c-4bb1-af36-a9663c009fcd",
-      paymentMethod: "ACH",
-      paymentAmount: 44798,
-    },
-  ]
-  const dataLoaded = false
+  it("Does not Show Pay Button if user has application and was payed", async () => {
+    render(<Table />)
+    await waitFor(() => screen.getByRole("table"))
+    const idWithPaidApplication = "a2ee3f67-2c01-4f9c-be0f-ff3b98474173"
+    const row = screen.getByText(idWithPaidApplication).closest("tr")
+    const utils = within(row)
 
-  React.useState = jest
-    .fn()
-    .mockReturnValueOnce([users, {}])
-    .mockReturnValueOnce([applications, {}])
-    .mockReturnValueOnce([payments, {}])
-    .mockReturnValueOnce([dataLoaded, true])
+    expect(utils.queryByText("Pay")).not.toBeInTheDocument()
+  })
 
-  const { debug } = render(<App />)
-  const table = await waitFor(() => screen.getByRole("table"))
-  debug(table)
+  it("Shows Pay Button if user has no application", async () => {
+    render(<Table />)
+    await waitFor(() => screen.getByRole("table"))
+    const idWithApplication = "ca456b9f-cd7c-414f-85f8-99534cfa4356"
+    const row = screen.getByText(idWithApplication).closest("tr")
+    const utils = within(row)
+
+    expect(utils.queryByText("Pay")).toBeInTheDocument()
+  })
 })
-
-// test("useState mock2", async () => {
-//   const { debug } = render(<App />)
-//   const table = await waitFor(() => screen.getByRole("table"))
-//   debug(table)
-// })
